@@ -1,13 +1,24 @@
 package usuarios;
 
-import java.time.LocalDateTime;
-
 public class UsuarioIndividual extends Usuario {
 
-  public UsuarioIndividual(String id, String nome, String email, String senha, LocalDateTime creationDateTime,
-      String telefone, String endereco, boolean ativo) {
-    super(id, nome, email, senha, creationDateTime, telefone, endereco, ativo);
-    
-  }
+    private String cpf;
 
+    public UsuarioIndividual(String nome, String email, String senha, String telefone, String endereco, String cpf) {
+        super(nome, email, senha, telefone, endereco);
+        this.cpf = cpf;
+    }
+
+    @Override
+    public void exibirPermissoes() {
+        System.out.println("Permissões: acessar suas contas e relatórios pessoais.");
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
 }
