@@ -1,16 +1,15 @@
 package domain.carteira;
 
+import domain.usuarios.Usuario;
+
 public class ContaCorrente extends ContaFinanceira {
 
-  public ContaCorrente(String id, String nome, double saldoInicial) {
-    super(id, nome, saldoInicial);
-    //TODO Auto-generated constructor stub
-  }
+    public ContaCorrente(String nome, double saldoInicial, Usuario dono) {
+        super(nome, saldoInicial, dono);
+    }
 
-  @Override
-  public String getTipoConta() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getTipoConta'");
-  }
-
+    @Override
+    public String getTipoConta() {
+        return "Conta Corrente"; // Aqui está a implementação
+    }
 }

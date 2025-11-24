@@ -1,16 +1,21 @@
 package domain.carteira;
+
+import java.util.UUID;
 import exception.SaldoInsuficienteException;
+import domain.usuarios.Usuario;
 
 public abstract class ContaFinanceira {
 
-    protected String id;
+    protected final String id;
     protected String nome;
     protected double saldo;
+    protected Usuario dono;
 
-    public ContaFinanceira(String id, String nome, double saldoInicial) {
-        this.id = id;
+    public ContaFinanceira(String nome, double saldoInicial, Usuario dono) {
+        this.id = UUID.randomUUID().toString();
         this.nome = nome;
         this.saldo = saldoInicial;
+        this.dono = dono;
     }
 
     public void depositar(double valor) {
@@ -30,20 +35,19 @@ public abstract class ContaFinanceira {
 
     public void transferir(ContaFinanceira destino, double valor) throws SaldoInsuficienteException {
         validarValorPositivo(valor);
-
         this.sacar(valor);
         destino.depositar(valor);
-
         aposMovimentacao("TRANSFERÊNCIA PARA " + destino.getNome(), valor);
         destino.aposMovimentacao("TRANSFERÊNCIA RECEBIDA DE " + this.getNome(), valor);
     }
 
-    protected void aposMovimentacao(String tipo, double valor) {}
+    protected void aposMovimentacao(String tipo, double valor) {
+        // Hook method
+    }
 
     protected void validarValorPositivo(double valor) {
-        if (valor <= 0) {
+        if (valor <= 0)
             throw new IllegalArgumentException("O valor deve ser positivo.");
-        }
     }
 
     public double getSaldo() {
@@ -57,6 +61,10 @@ public abstract class ContaFinanceira {
     public String getId() {
         return id;
     }
-    
+
+    public Usuario getDono() {
+        return dono;
+    }
+
     public abstract String getTipoConta();
 }

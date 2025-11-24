@@ -1,5 +1,5 @@
 package exception;
 
-public class CategoriaNaoEncontradaException {
+public class CategoriaNaoEncontradaException extends Exception {
   
 }

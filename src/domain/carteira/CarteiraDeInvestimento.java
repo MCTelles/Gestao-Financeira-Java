@@ -1,13 +1,15 @@
 package domain.carteira;
 
+import domain.usuarios.Usuario;
+
 public class CarteiraDeInvestimento extends ContaFinanceira {
 
-    public CarteiraDeInvestimento(String id, String nome, double saldoInicial) {
-        super(id, nome, saldoInicial);
+    public CarteiraDeInvestimento(String nome, double saldoInicial, Usuario dono) {
+        super(nome, saldoInicial, dono);
     }
 
     @Override
     public String getTipoConta() {
-        return "";
+        return "Carteira de Investimento";
     }
 }

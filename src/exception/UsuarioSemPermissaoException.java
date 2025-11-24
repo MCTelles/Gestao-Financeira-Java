@@ -1,5 +1,5 @@
 package exception;
 
-public class UsuarioSemPermissaoException {
+public class UsuarioSemPermissaoException extends Exception {
   
 }
