@@ -9,7 +9,7 @@ import domain.usuarios.Usuario;
 import persistence.ContaRepository;
 import persistence.ContaRepositoryArquivo;
 
-public class    ContaService {
+public class ContaService {
 
     private final ContaRepository repository = new ContaRepositoryArquivo();
     private final List<ContaFinanceira> contas;

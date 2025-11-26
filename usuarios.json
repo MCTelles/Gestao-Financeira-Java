@@ -1,0 +1,11 @@
+[
+  {
+    "id": "b511161f-fdfb-4a5f-b956-31b116b74b73",
+    "nome": "Marcelo",
+    "email": "marcelo@teste.com",
+    "senha": "123",
+    "telefone": "321",
+    "endereco": "Rua",
+    "ativo": true
+  }
+]

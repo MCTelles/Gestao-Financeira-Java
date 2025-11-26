@@ -1,5 +1,7 @@
 package app;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class IoConsole {
@@ -9,6 +11,13 @@ public class IoConsole {
     public static String lerTexto(String msg) {
         System.out.print(msg + ": ");
         return scanner.nextLine();
+    }
+
+    public static LocalDate lerData(String mensagem) {
+        System.out.print(mensagem + " (formato: YYYY-MM-DD): ");
+        String dataString = scanner.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dataString, formatter); // Converte a string para LocalDate
     }
 
     public static int lerInt(String msg) {

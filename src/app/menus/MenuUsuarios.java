@@ -43,7 +43,8 @@ public class MenuUsuarios {
         String telefone = IoConsole.lerTexto("Telefone:");
         String endereco = IoConsole.lerTexto("Endereço:");
 
-        Usuario u = usuarioService.criarUsuarioIndividual(nome, email, senha, telefone, endereco);
+        boolean ativo = IoConsole.lerTexto("Usuário ativo? (sim/nao):").equalsIgnoreCase("sim");
+        Usuario u = usuarioService.criarUsuarioIndividual(nome, email, senha, telefone, endereco, ativo);
 
         System.out.println("Usuário criado com ID: " + u.getId());
     }
@@ -55,8 +56,11 @@ public class MenuUsuarios {
         String senha = IoConsole.lerTexto("Senha do grupo:");
         String telefone = IoConsole.lerTexto("Telefone do grupo:");
         String endereco = IoConsole.lerTexto("Endereço do grupo:");
+        Conta conta = new Conta(1000.00);
 
-        Grupo grupo = usuarioService.criarGrupo(nome, email, senha, telefone, endereco);
+        boolean ativo = IoConsole.lerTexto("Usuário ativo? (sim/nao):").equalsIgnoreCase("sim");
+
+        Grupo grupo = usuarioService.criarGrupo(nome, email, senha, telefone, endereco, ativo, conta);
 
         System.out.println("Grupo criado com ID: " + grupo.getId());
     }
