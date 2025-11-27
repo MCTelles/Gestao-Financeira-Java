@@ -1,22 +1,35 @@
 package app;
 
 import app.menus.MenuContas;
-import app.IoConsole;
-import service.ContaService;
-import service.UsuarioService;
-import app.menus.MenuUsuarios;
-import service.MetaService;
 import app.menus.MenuMetas;
 import app.menus.MenuRelatorios;
+import app.menus.MenuUsuarios;
 import domain.relatorios.GerenciadorRelatorios;
+import service.ContaService;
+import service.MetaService;
+import service.UsuarioService;
 
 public class MenuPrincipal {
 
-    // Instância única de ContaService para toda a aplicação
-    private final ContaService contaService = new ContaService();
-    private final UsuarioService usuarioService = new UsuarioService();
-    private final MetaService metaService = new MetaService();
-    private final GerenciadorRelatorios gerenciadorRelatorios = new GerenciadorRelatorios();
+    private final UsuarioService usuarioService;
+    private final ContaService contaService;
+    private final MetaService metaService;
+    private final GerenciadorRelatorios gerenciadorRelatorios;
+
+    public MenuPrincipal() {
+
+        // Criamos APENAS um UsuarioService
+        this.usuarioService = new UsuarioService();
+
+        // E passamos ele para ContaService
+        this.contaService = new ContaService(usuarioService);
+
+        // Metas pode usar o mesmo usuário
+        this.metaService = new MetaService();
+
+        // Relatórios também
+        this.gerenciadorRelatorios = new GerenciadorRelatorios();
+    }
 
     public void exibir() {
         while (true) {
@@ -34,7 +47,6 @@ public class MenuPrincipal {
                 case 2 -> new MenuUsuarios(usuarioService).exibir();
                 case 3 -> gerenciarMetas();
                 case 4 -> acessarRelatorios();
-
                 case 0 -> {
                     System.out.println("Encerrando...");
                     return;
@@ -43,6 +55,7 @@ public class MenuPrincipal {
             }
         }
     }
+
     private void gerenciarMetas() {
         MenuMetas menuMetas = new MenuMetas(metaService, usuarioService);
         menuMetas.exibir();
@@ -50,6 +63,6 @@ public class MenuPrincipal {
 
     private void acessarRelatorios() {
         MenuRelatorios menuRelatorios = new MenuRelatorios(usuarioService, gerenciadorRelatorios);
-        menuRelatorios.exibir();  // Exibe o menu de relatórios
+        menuRelatorios.exibir();
     }
 }

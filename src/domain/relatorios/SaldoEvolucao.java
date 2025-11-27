@@ -1,8 +1,10 @@
 package domain.relatorios;
 
 import domain.transacoes.Transacao;
-import service.UsuarioService;
 import domain.usuarios.Usuario;
+import java.time.LocalDate;
+import java.util.*;
+import service.UsuarioService;
 
 public class SaldoEvolucao implements IRelatorio {
 
@@ -14,21 +16,32 @@ public class SaldoEvolucao implements IRelatorio {
 
     @Override
     public void gerar() {
-        System.out.println("=== Relatório de Evolução de Saldo ===");
+        System.out.println("\n=== RELATÓRIO DE EVOLUÇÃO DO SALDO ===");
+
+        Map<LocalDate, Double> mapa = new TreeMap<>();
 
         for (Usuario usuario : usuarioService.listarUsuarios()) {
-            double saldoInicial = calcularSaldoInicial(usuario);
-            double saldoFinal = saldoInicial;
+            for (Transacao t : usuario.getTransacoes()) {
+                LocalDate data = t.getData();
+                double valor = t.getTipo() == Transacao.TipoTransacao.RECEITA
+                        ? t.getValor()
+                        : -t.getValor();
 
-            for (Transacao transacao : usuario.getTransacoes()) {
-                saldoFinal += transacao.getTipo() == Transacao.TipoTransacao.RECEITA ? transacao.getValor() : -transacao.getValor();
+                mapa.put(data, mapa.getOrDefault(data, 0.0) + valor);
             }
-
-            System.out.println(usuario.getNome() + " - Saldo Inicial: " + saldoInicial + " | Saldo Final: " + saldoFinal);
         }
-    }
 
-    private double calcularSaldoInicial(Usuario usuario) {
-        return usuario.getConta().getSaldoInicial();  // Acessando o saldo inicial da conta
+        double saldoAcumulado = 0.0;
+
+        for (var entry : mapa.entrySet()) {
+            saldoAcumulado += entry.getValue();
+            int barras = (int) Math.max(0, saldoAcumulado / 10);
+
+            System.out.printf("%s — Saldo: R$ %.2f | %s\n",
+                    entry.getKey(),
+                    saldoAcumulado,
+                    "#".repeat(barras)
+            );
+        }
     }
 }

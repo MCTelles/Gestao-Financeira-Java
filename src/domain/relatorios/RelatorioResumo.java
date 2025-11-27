@@ -1,8 +1,10 @@
 package domain.relatorios;
 
-import domain.usuarios.Usuario;
 import service.UsuarioService;
 import domain.transacoes.Transacao;
+import domain.usuarios.Usuario;
+
+import java.util.*;
 
 public class RelatorioResumo implements IRelatorio {
 
@@ -14,23 +16,49 @@ public class RelatorioResumo implements IRelatorio {
 
     @Override
     public void gerar() {
-        System.out.println("=== Relatório Resumo ===");
+        System.out.println("\n=== RELATÓRIO RESUMO ===");
+
+        double totalReceitas = 0.0;
+        double totalDespesas = 0.0;
+
+        List<Transacao> despesas = new ArrayList<>();
+        Map<String, Double> categorias = new HashMap<>();
 
         for (Usuario usuario : usuarioService.listarUsuarios()) {
-            double totalGastos = 0.0;
-            double totalEconomias = 0.0;
+            for (Transacao t : usuario.getTransacoes()) {
 
-            // Calculando o total de gastos e economias diretamente no método gerar()
-            for (Transacao transacao : usuario.getTransacoes()) {
-                if (transacao.getTipo() == Transacao.TipoTransacao.DESPESA) {
-                    totalGastos += transacao.getValor();
-                } else if (transacao.getTipo() == Transacao.TipoTransacao.RECEITA) {
-                    totalEconomias += transacao.getValor();
+                if (t.getTipo() == Transacao.TipoTransacao.RECEITA) {
+                    totalReceitas += t.getValor();
+                } else {
+                    totalDespesas += t.getValor();
+                    despesas.add(t);
+                    categorias.put(
+                            t.getCategoria(),
+                            categorias.getOrDefault(t.getCategoria(), 0.0) + t.getValor()
+                    );
                 }
             }
+        }
 
-            // Exibe o resultado
-            System.out.println(usuario.getNome() + " - Total de Gastos: " + totalGastos + " | Total de Economias: " + totalEconomias);
+        System.out.printf("Total de Receitas: R$ %.2f\n", totalReceitas);
+        System.out.printf("Total de Despesas: R$ %.2f\n", totalDespesas);
+        System.out.printf("Saldo Geral: R$ %.2f\n", (totalReceitas - totalDespesas));
+
+        despesas.sort(Comparator.comparingDouble(Transacao::getValor).reversed());
+
+        System.out.println("\nMaiores despesas:");
+        for (int i = 0; i < Math.min(3, despesas.size()); i++) {
+            System.out.println("- " + despesas.get(i).getDescricao()
+                    + " — R$ " + despesas.get(i).getValor());
+        }
+
+        if (!categorias.isEmpty()) {
+            String cat = categorias.entrySet()
+                    .stream()
+                    .max(Map.Entry.comparingByValue())
+                    .get().getKey();
+
+            System.out.println("\nCategoria dominante: " + cat);
         }
     }
 }

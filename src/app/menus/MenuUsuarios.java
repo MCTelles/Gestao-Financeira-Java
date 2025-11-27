@@ -37,44 +37,83 @@ public class MenuUsuarios {
 
     private void criarUsuarioIndividual() {
 
+        System.out.println("\n=== CRIAR USUÁRIO INDIVIDUAL ===");
+
         String nome = IoConsole.lerTexto("Nome:");
         String email = IoConsole.lerTexto("Email:");
         String senha = IoConsole.lerTexto("Senha:");
         String telefone = IoConsole.lerTexto("Telefone:");
         String endereco = IoConsole.lerTexto("Endereço:");
 
-        boolean ativo = IoConsole.lerTexto("Usuário ativo? (sim/nao):").equalsIgnoreCase("sim");
-        Usuario u = usuarioService.criarUsuarioIndividual(nome, email, senha, telefone, endereco, ativo);
+        System.out.println("Escolha o perfil:");
+        System.out.println("1. Admin");
+        System.out.println("2. Moderador");
+        System.out.println("3. Membro");
 
-        System.out.println("Usuário criado com ID: " + u.getId());
+        int escolha = IoConsole.lerInt("Perfil:");
+
+        String perfil = switch (escolha) {
+            case 1 -> "ADMIN";
+            case 2 -> "MODERADOR";
+            case 3 -> "MEMBRO";
+            default -> "MEMBRO";
+        };
+
+        Usuario u = usuarioService.criarUsuario(
+                perfil,
+                nome,
+                email,
+                senha,
+                telefone,
+                endereco,
+                true
+        );
+
+        System.out.println("Usuário criado com sucesso!");
+        System.out.println("ID: " + u.getId());
+        System.out.println("Perfil: " + u.getPerfil());
     }
 
     private void criarGrupo() {
 
+        System.out.println("\n=== CRIAR GRUPO ===");
+
         String nome = IoConsole.lerTexto("Nome do grupo:");
         String email = IoConsole.lerTexto("Email do grupo:");
-        String senha = IoConsole.lerTexto("Senha do grupo:");
-        String telefone = IoConsole.lerTexto("Telefone do grupo:");
-        String endereco = IoConsole.lerTexto("Endereço do grupo:");
-        Conta conta = new Conta(1000.00);
+        String senha = IoConsole.lerTexto("Senha:");
+        String telefone = IoConsole.lerTexto("Telefone:");
+        String endereco = IoConsole.lerTexto("Endereço:");
 
-        boolean ativo = IoConsole.lerTexto("Usuário ativo? (sim/nao):").equalsIgnoreCase("sim");
+        Grupo grupo = usuarioService.criarGrupo(
+                nome,
+                email,
+                senha,
+                telefone,
+                endereco,
+                true
+        );
 
-        Grupo grupo = usuarioService.criarGrupo(nome, email, senha, telefone, endereco, ativo, conta);
-
-        System.out.println("Grupo criado com ID: " + grupo.getId());
+        System.out.println("Grupo criado com sucesso!");
+        System.out.println("ID: " + grupo.getId());
     }
+
 
     private void listarUsuarios() {
 
         System.out.println("\n--- USUÁRIOS CADASTRADOS ---");
 
         for (Usuario u : usuarioService.listarUsuarios()) {
+
+            String tipo = (u instanceof Grupo)
+                    ? "GRUPO"
+                    : u.getPerfil().name();
+
             System.out.println(
-                    u.getId() + " | " + u.getNome() + " | " + u.getTipo() + " | Email: " + u.getEmail()
+                u.getId() + " | " + u.getNome() + " | " + tipo + " | Email: " + u.getEmail()
             );
         }
     }
+
 
     private void gerenciarGrupo() {
 

@@ -16,11 +16,9 @@ public abstract class Usuario {
     protected String telefone;
     protected String endereco;
     protected boolean ativo;
-
     protected Conta conta;
-
-    // Atributo para armazenar as transações do usuário
     protected List<Transacao> transacoes;
+    protected TipoPerfil perfil;
 
     public Usuario(String nome, String email, String senha, String telefone, String endereco, boolean ativo, Conta conta) {
         this.id = UUID.randomUUID().toString();
@@ -30,12 +28,12 @@ public abstract class Usuario {
         this.creationDateTime = LocalDateTime.now();
         this.telefone = telefone;
         this.endereco = endereco;
-        this.ativo = true;
+        this.ativo = ativo;
         this.transacoes = new ArrayList<>();
         this.conta = conta;
     }
 
-    // Métodos para acessar as informações do usuário
+    // ==== GETTERS BÁSICOS ====
     public String getId() { return id; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
@@ -54,22 +52,20 @@ public abstract class Usuario {
     public String getEndereco() { return endereco; }
     public void setEndereco(String endereco) { this.endereco = endereco; }
 
-    public Conta getConta() {
-        return conta;
-    }
+    public Conta getConta() { return conta; }
 
     public boolean isAtivo() { return ativo; }
     public void setAtivo(boolean ativo) { this.ativo = ativo; }
 
-    // Método para acessar as transações do usuário
-    public List<Transacao> getTransacoes() {
-        return transacoes;
+    public List<Transacao> getTransacoes() { return transacoes; }
+
+    public void adicionarTransacao(Transacao transacao) { transacoes.add(transacao); }
+
+    public TipoPerfil getPerfil() {
+        return perfil;
+    }
+    public boolean temPermissao(Permissao permissao) {
+        return false;
     }
 
-    // Método para adicionar uma transação ao usuário
-    public void adicionarTransacao(Transacao transacao) {
-        transacoes.add(transacao);
-    }
-
-    public abstract String getTipo();
 }

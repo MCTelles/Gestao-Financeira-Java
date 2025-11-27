@@ -10,6 +10,7 @@ public class Grupo extends Usuario {
 
     public Grupo(String nome, String email, String senha, String telefone, String endereco, boolean ativo, Conta conta) {
         super(nome, email, senha, telefone, endereco, ativo, conta);
+        this.perfil = TipoPerfil.GRUPO;
     }
 
     // Adiciona um membro ao grupo

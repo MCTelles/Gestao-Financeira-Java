@@ -1,10 +1,11 @@
 package domain.relatorios;
 
-import java.time.LocalDate;
-import service.UsuarioService;
-import domain.usuarios.Usuario;
 import domain.transacoes.Transacao;
-
+import domain.usuarios.Usuario;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import service.UsuarioService;
 
 public class RelatorioGastosPorPeriodo implements IRelatorio {
 
@@ -20,33 +21,48 @@ public class RelatorioGastosPorPeriodo implements IRelatorio {
 
     @Override
     public void gerar() {
-        System.out.println("=== Relatório de Gastos por Período ===");
-        double totalGastos = 0.0;
+        System.out.println("\n=== RELATÓRIO DE GASTOS POR PERÍODO ===");
+        System.out.println("Período: " + inicio + " até " + fim);
+
+        double totalDespesas = 0.0;
+        double totalReceitas = 0.0;
+
+        Map<String, Double> categorias = new HashMap<>();
 
         for (Usuario usuario : usuarioService.listarUsuarios()) {
-            double gastosPeriodo = 0.0;
-            for (Transacao transacao : usuario.getTransacoes()) {
-                // Verifica se a transação está dentro do período
-                if (transacao.getTipo() == Transacao.TipoTransacao.DESPESA &&
-                        (transacao.getData().isAfter(inicio) && transacao.getData().isBefore(fim))) {
-                    gastosPeriodo += transacao.getValor();
+            for (Transacao t : usuario.getTransacoes()) {
+
+                LocalDate data = t.getData();
+                if (data.isBefore(inicio) || data.isAfter(fim))
+                    continue;
+
+                switch (t.getTipo()) {
+                    case DESPESA -> {
+                        totalDespesas += t.getValor();
+                        categorias.put(
+                                t.getCategoria(),
+                                categorias.getOrDefault(t.getCategoria(), 0.0) + t.getValor()
+                        );
+                    }
+                    case RECEITA -> totalReceitas += t.getValor();
                 }
             }
-            totalGastos += gastosPeriodo;
-            System.out.println(usuario.getNome() + ": " + gastosPeriodo);
         }
 
-        System.out.println("Total de Gastos: " + totalGastos);
-    }
+        System.out.printf("Total de Receitas: R$ %.2f\n", totalReceitas);
+        System.out.printf("Total de Despesas: R$ %.2f\n", totalDespesas);
+        System.out.printf("Saldo do Período: R$ %.2f\n", (totalReceitas - totalDespesas));
 
-    // Método para calcular os gastos no período
-    private double calcularGastosPorPeriodo(Usuario usuario, LocalDate inicio, LocalDate fim) {
-        double total = 0.0;
-        for (Transacao transacao : usuario.getTransacoes()) {
-            if (transacao.getData().isAfter(inicio) && transacao.getData().isBefore(fim)) {
-                total += transacao.getValor();
-            }
+        if (!categorias.isEmpty()) {
+            String maiorCategoria = categorias.entrySet()
+                    .stream()
+                    .max(Map.Entry.comparingByValue())
+                    .get()
+                    .getKey();
+
+            System.out.println("Categoria mais cara: " + maiorCategoria);
+        } else {
+            System.out.println("Nenhuma despesa no período.");
         }
-        return total;
     }
 }

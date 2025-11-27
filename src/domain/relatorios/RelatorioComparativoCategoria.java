@@ -1,10 +1,10 @@
 package domain.relatorios;
-import java.time.LocalDate;
-import java.util.List;
-import domain.usuarios.Usuario;
-import service.*;
-import domain.transacoes.Transacao;
 
+import domain.transacoes.Transacao;
+import domain.usuarios.Usuario;
+import java.util.*;
+import java.util.stream.Collectors;
+import service.UsuarioService;
 
 public class RelatorioComparativoCategoria implements IRelatorio {
 
@@ -16,38 +16,42 @@ public class RelatorioComparativoCategoria implements IRelatorio {
 
     @Override
     public void gerar() {
-        System.out.println("=== Relatório Comparativo por Categoria ===");
+        System.out.println("\n=== RELATÓRIO COMPARATIVO POR CATEGORIA ===");
+
+        Map<String, Double> categorias = new HashMap<>();
 
         for (Usuario usuario : usuarioService.listarUsuarios()) {
-            // Inicializa os totais por categoria
-            double totalAlimentacao = 0.0;
-            double totalMoradia = 0.0;
+            for (Transacao t : usuario.getTransacoes()) {
+                if (t.getTipo() != Transacao.TipoTransacao.DESPESA)
+                    continue;
 
-            for (Transacao transacao : usuario.getTransacoes()) {
-                // Verifica o tipo da transação e soma o valor para a categoria correspondente
-                if (transacao.getTipo() == Transacao.TipoTransacao.DESPESA) {
-                    if (transacao.getCategoria().equals("Alimentação")) {
-                        totalAlimentacao += transacao.getValor();
-                    } else if (transacao.getCategoria().equals("Moradia")) {
-                        totalMoradia += transacao.getValor();
-                    }
-                }
-            }
-
-            System.out.println(usuario.getNome() + " - Categoria: Alimentação - Total: " + totalAlimentacao);
-            System.out.println(usuario.getNome() + " - Categoria: Moradia - Total: " + totalMoradia);
-        }
-    }
-
-    // Método para calcular o total de despesas por categoria
-    private double calcularTotalPorCategoria(Usuario usuario, String categoria) {
-        double total = 0.0;
-        for (Transacao transacao : usuario.getTransacoes()) {
-            if (transacao.getCategoria().equals(categoria)) {
-                total += transacao.getValor();
+                categorias.put(
+                        t.getCategoria(),
+                        categorias.getOrDefault(t.getCategoria(), 0.0) + t.getValor()
+                );
             }
         }
-        return total;
-    }
 
+        if (categorias.isEmpty()) {
+            System.out.println("Nenhuma despesa registrada.");
+            return;
+        }
+
+        double total = categorias.values().stream().mapToDouble(Double::doubleValue).sum();
+
+        List<Map.Entry<String, Double>> ranking = categorias.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+                .collect(Collectors.toList());
+
+        int posicao = 1;
+        for (var entry : ranking) {
+            double valor = entry.getValue();
+            double percentual = (valor / total) * 100;
+
+            System.out.printf("%dº %s — R$ %.2f (%.2f%%)\n",
+                    posicao++, entry.getKey(), valor, percentual
+            );
+        }
+    }
 }

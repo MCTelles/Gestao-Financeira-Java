@@ -49,17 +49,23 @@ public class MenuGrupos {
 
     private void listarMembros() {
 
-        System.out.println("\n--- MEMBROS DO GRUPO ---");
+    System.out.println("\n--- MEMBROS DO GRUPO ---");
 
-        if (grupo.getMembros().isEmpty()) {
-            System.out.println("Nenhum membro no grupo.");
-            return;
-        }
-
-        for (Usuario u : grupo.getMembros()) {
-            System.out.println(
-                    u.getId() + " | " + u.getNome() + " | " + u.getTipo() + " | Email: " + u.getEmail()
-            );
-        }
+    if (grupo.getMembros().isEmpty()) {
+        System.out.println("Nenhum membro no grupo.");
+        return;
     }
+
+    for (Usuario u : grupo.getMembros()) {
+
+        String tipo = (u instanceof Grupo)
+                ? "GRUPO"
+                : u.getPerfil().name();
+
+        System.out.println(
+                u.getId() + " | " + u.getNome() + " | " + tipo + " | Email: " + u.getEmail()
+        );
+    }
+}
+
 }

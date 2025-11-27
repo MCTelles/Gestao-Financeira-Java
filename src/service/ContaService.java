@@ -1,20 +1,20 @@
 package service;
 
-import java.util.List;
-
 import domain.carteira.ContaFactory;
-import domain.carteira.ContaFinanceira;
 import domain.carteira.ContaFactory.TipoConta;
+import domain.carteira.ContaFinanceira;
 import domain.usuarios.Usuario;
+import java.util.List;
 import persistence.ContaRepository;
 import persistence.ContaRepositoryArquivo;
 
 public class ContaService {
 
-    private final ContaRepository repository = new ContaRepositoryArquivo();
+    private final ContaRepository repository;
     private final List<ContaFinanceira> contas;
 
-    public ContaService() {
+    public ContaService(UsuarioService usuarioService) {
+        this.repository = new ContaRepositoryArquivo(usuarioService);
         this.contas = repository.carregar();
     }
 
@@ -24,6 +24,7 @@ public class ContaService {
 
         contas.add(conta);
         repository.salvar(contas);
+
         return conta;
     }
 

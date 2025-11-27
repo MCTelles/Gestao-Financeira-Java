@@ -54,7 +54,7 @@ public class MenuContas {
         System.out.println("1. Conta Corrente");
         System.out.println("2. Conta Digital");
         System.out.println("3. Cartão de Crédito");
-        System.out.println("4. Poupança Virtual");  // Mantido como Poupança Virtual
+        System.out.println("4. Poupança Virtual");  
         System.out.println("5. Carteira de Investimento");
 
         int tipoEscolhido = IoConsole.lerInt("Escolha o tipo:");
@@ -63,7 +63,7 @@ public class MenuContas {
             case 1 -> TipoConta.CONTA_CORRENTE;
             case 2 -> TipoConta.CONTA_DIGITAL;
             case 3 -> TipoConta.CARTAO_CREDITO;
-            case 4 -> TipoConta.POUPANCA_VIRTUAL;  // Mantido Poupança Virtual
+            case 4 -> TipoConta.POUPANCA_VIRTUAL;
             case 5 -> TipoConta.CARTEIRA_INVESTIMENTO;
             default -> {
                 System.out.println("Tipo inválido!");

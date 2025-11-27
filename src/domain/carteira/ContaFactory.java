@@ -2,9 +2,7 @@ package domain.carteira;
 
 import domain.usuarios.Usuario;
 
-public final class ContaFactory {
-
-    private ContaFactory() {}
+public class ContaFactory {
 
     public enum TipoConta {
         CONTA_CORRENTE,
@@ -14,56 +12,48 @@ public final class ContaFactory {
         CARTEIRA_INVESTIMENTO
     }
 
-    /**
-     * Factory principal para criar qualquer tipo de conta financeira.
-     */
+    // Criação normal (ID automático)
     public static ContaFinanceira criarConta(
             TipoConta tipo,
             String nome,
             double saldoInicial,
             Usuario dono,
-            double parametroExtra // usado apenas quando necessário
+            double extra
     ) {
         return switch (tipo) {
-
             case CONTA_CORRENTE ->
                     new ContaCorrente(nome, saldoInicial, dono);
-
             case CONTA_DIGITAL ->
-                    new ContaDigital(nome, saldoInicial, parametroExtra, dono);
-            // parametroExtra = limite diário
-
+                    new ContaDigital(nome, saldoInicial, dono, extra);
             case CARTAO_CREDITO ->
-                    new CartaoDeCredito(nome, parametroExtra, dono);
-            // parametroExtra = limite do cartão
-
+                    new CartaoCredito(nome, saldoInicial, dono, extra);
             case POUPANCA_VIRTUAL ->
                     new PoupancaVirtual(nome, saldoInicial, dono);
-
             case CARTEIRA_INVESTIMENTO ->
-                    new CarteiraDeInvestimento(nome, saldoInicial, dono);
+                    new CarteiraInvestimento(nome, saldoInicial, dono);
         };
     }
 
-    // Métodos auxiliares opcionais (facilitam chamadas específicas)
-
-    public static ContaFinanceira criarContaCorrente(String nome, double saldo, Usuario dono) {
-        return criarConta(TipoConta.CONTA_CORRENTE, nome, saldo, dono, 0);
-    }
-
-    public static ContaFinanceira criarContaDigital(String nome, double saldo, double limite, Usuario dono) {
-        return criarConta(TipoConta.CONTA_DIGITAL, nome, saldo, dono, limite);
-    }
-
-    public static ContaFinanceira criarCartaoCredito(String nome, double limiteCredito, Usuario dono) {
-        return criarConta(TipoConta.CARTAO_CREDITO, nome, 0, dono, limiteCredito);
-    }
-
-    public static ContaFinanceira criarCofrinho(String nome, double saldo, Usuario dono) {
-        return criarConta(TipoConta.POUPANCA_VIRTUAL, nome, saldo, dono, 0);
-    }
-
-    public static ContaFinanceira criarInvestimento(String nome, double saldo, Usuario dono) {
-        return criarConta(TipoConta.CARTEIRA_INVESTIMENTO, nome, saldo, dono, 0);
+    // Criação restaurando a conta do JSON (com ID)
+    public static ContaFinanceira criarContaComId(
+            String id,
+            TipoConta tipo,
+            String nome,
+            double saldo,
+            Usuario dono,
+            double extra
+    ) {
+        return switch (tipo) {
+            case CONTA_CORRENTE ->
+                    new ContaCorrente(id, nome, saldo, dono);
+            case CONTA_DIGITAL ->
+                    new ContaDigital(id, nome, saldo, dono, extra);
+            case CARTAO_CREDITO ->
+                    new CartaoCredito(id, nome, saldo, dono, extra);
+            case POUPANCA_VIRTUAL ->
+                    new PoupancaVirtual(id, nome, saldo, dono);
+            case CARTEIRA_INVESTIMENTO ->
+                    new CarteiraInvestimento(id, nome, saldo, dono);
+        };
     }
 }

@@ -1,10 +1,13 @@
 package persistence;
 
-import java.util.List;
 import domain.carteira.ContaFinanceira;
+import java.util.List;
 
 public interface ContaRepository {
-    void salvar(List<ContaFinanceira> contas);
+
     List<ContaFinanceira> carregar();
+
+    void salvar(java.util.List<ContaFinanceira> contas);
+
     void apagarTudo();
 }

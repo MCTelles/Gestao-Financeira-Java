@@ -4,40 +4,48 @@ import service.UsuarioService;
 import domain.transacoes.Transacao;
 import domain.usuarios.Usuario;
 
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class RankingDespesas implements IRelatorio {
 
     private final UsuarioService usuarioService;
+    private final LocalDate inicio;
+    private final LocalDate fim;
 
-    public RankingDespesas(UsuarioService usuarioService) {
+    public RankingDespesas(UsuarioService usuarioService, LocalDate inicio, LocalDate fim) {
         this.usuarioService = usuarioService;
+        this.inicio = inicio;
+        this.fim = fim;
     }
 
     @Override
     public void gerar() {
-        System.out.println("=== Relatório de Ranking de Maiores Despesas ===");
+        System.out.println("\n=== RANKING DE MAIORES GASTOS ===");
+
+        Map<Usuario, Double> totais = new HashMap<>();
 
         for (Usuario usuario : usuarioService.listarUsuarios()) {
-            // Vamos buscar as transações do usuário e calcular a maior despesa
-            double maiorDespesa = 0.0;
-            for (Transacao transacao : usuario.getTransacoes()) {
-                // Verifica se a transação é uma despesa e se o valor é maior que o maior despesa registrado
-                if (transacao.getTipo() == Transacao.TipoTransacao.DESPESA && transacao.getValor() > maiorDespesa) {
-                    maiorDespesa = transacao.getValor();
-                }
-            }
-            System.out.println(usuario.getNome() + " - Maior Despesa: " + maiorDespesa);
+            double total = usuario.getTransacoes().stream()
+                    .filter(t -> t.getTipo() == Transacao.TipoTransacao.DESPESA)
+                    .filter(t -> !t.getData().toLocalDate().isBefore(inicio)
+                            && !t.getData().toLocalDate().isAfter(fim))
+                    .mapToDouble(Transacao::getValor)
+                    .sum();
+
+            totais.put(usuario, total);
+        }
+
+        List<Map.Entry<Usuario, Double>> ranking = totais.entrySet().stream()
+                .sorted(Map.Entry.<Usuario, Double>comparingByValue().reversed())
+                .collect(Collectors.toList());
+
+        int posicao = 1;
+        for (var entry : ranking) {
+            System.out.printf("%dº %s — R$ %.2f\n",
+                    posicao++, entry.getKey().getNome(), entry.getValue()
+            );
         }
     }
-
-    private double calcularMaiorDespesa(Usuario usuario) {
-        // Lógica para buscar as transações e calcular a maior despesa do usuário
-        double maiorDespesa = 0.0;
-        for (Transacao transacao : usuario.getTransacoes()) {
-            if (transacao.getValor() > maiorDespesa) {
-                maiorDespesa = transacao.getValor();
-            }
-        }
-        return maiorDespesa;
-    }
-
 }
